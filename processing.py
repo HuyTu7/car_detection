@@ -61,38 +61,51 @@ class CarModel:
         if not load:
             self.model = model = Sequential()
             model = Sequential()
-            model.add(Conv2D(48, 3, 3, border_mode='same', input_shape=(3, 40, 40)))
-            model.add(Activation('relu'))
-
-            model.add(Conv2D(48, 3, 3))
-            model.add(Activation('relu'))
+            '''
+            model.add(Conv2D(48, (3, 3), padding='same', activation='relu', input_shape=(3, 40, 40)))
+            model.add(Dropout(0.2))
+            model.add(Conv2D(48, (3, 3), activation='relu'))
             model.add(MaxPooling2D(pool_size=(2, 2)))
             model.add(Dropout(0.25))
 
-            model.add(Conv2D(96, 3, 3, border_mode='same'))
-            model.add(Activation('relu'))
-
-            model.add(Conv2D(96, 3, 3))
-            model.add(Activation('relu'))
-            model.add(Conv2D(pool_size=(2, 2)))
+            model.add(Conv2D(96, (3, 3), activation='relu', padding='same'))
+            model.add(Dropout(0.2))
+            model.add(Conv2D(96, (3, 3), activation='relu'))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
             model.add(Dropout(0.25))
 
-            model.add(Conv2D(192, 3, 3, border_mode='same'))
-            model.add(Activation('relu'))
-
-            model.add(Conv2D(192, 3, 3))
-            model.add(Activation('relu'))
+            model.add(Conv2D(192, (3, 3), activation='relu', padding='same'))
+            model.add(Dropout(0.2))
+            model.add(Conv2D(192, (3, 3), activation='relu'))
             model.add(MaxPooling2D(pool_size=(2, 2)))
             model.add(Dropout(0.25))
             model.add(Flatten())
-            model.add(Dense(512))
-            model.add(Activation('relu'))
+            model.add(Dense(512), activation='relu')
             model.add(Dropout(0.5))
-            model.add(Dense(256))
-            model.add(Activation('relu'))
+            model.add(Dense(256), activation='relu')
             model.add(Dropout(0.5))
             model.add(Dense(2, activation='softmax'))
-
+            '''
+            model.add(Conv2D(32, (3, 3), input_shape=(3, 40, 40), activation='relu', padding='same'))
+            model.add(Dropout(0.2))
+            model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
+            model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+            model.add(Dropout(0.2))
+            model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
+            model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
+            model.add(Dropout(0.2))
+            model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
+            model.add(Flatten())
+            model.add(Dropout(0.2))
+            model.add(Dense(1024, activation='relu', kernel_constraint=maxnorm(3)))
+            model.add(Dropout(0.2))
+            model.add(Dense(512, activation='relu', kernel_constraint=maxnorm(3)))
+            model.add(Dropout(0.2))
+            model.add(Dense(2, activation='softmax'))
+            
         else:
             from keras.models import model_from_json
             json_file = open(load.rsplit('.', 1)[0] + '.json')
@@ -189,6 +202,6 @@ if __name__ == '__main__':
     model = CarModel()
     #model.model.load_weights('./models/50beauty.h5')
     train_x, train_y, test_x, test_y = dataset.getTrainTest()
-
+    #print train_y      
     model.train(train_x, train_y, test_x, test_y)
     model.getEvaluate(test_x, test_y)
