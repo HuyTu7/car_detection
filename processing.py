@@ -9,7 +9,7 @@ import json
 import csv
 import numpy as np
 import pandas as pd
-
+import time
 np.random.seed(100)
 
 import utils
@@ -60,7 +60,26 @@ class CarModel:
     def __init__(self, load=None):
         if not load:
             self.model = model = Sequential()
-            model = Sequential()
+            print "hi"
+            model.add(Conv2D(32, (3, 3), input_shape=(40, 100, 3), activation='relu', padding='same'))
+            model.add(Dropout(0.2))
+            model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
+            model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+            model.add(Dropout(0.2))
+            model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
+            model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
+            model.add(Dropout(0.2))
+            model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
+            model.add(Flatten())
+            model.add(Dropout(0.2))
+            model.add(Dense(1024, activation='relu', kernel_constraint=maxnorm(3)))
+            model.add(Dropout(0.2))
+            model.add(Dense(512, activation='relu', kernel_constraint=maxnorm(3)))
+            model.add(Dropout(0.4))
+            model.add(Dense(2, activation='softmax'))
             '''
             model.add(Conv2D(48, (3, 3), padding='same', activation='relu', input_shape=(3, 40, 40)))
             model.add(Dropout(0.2))
@@ -86,26 +105,6 @@ class CarModel:
             model.add(Dropout(0.5))
             model.add(Dense(2, activation='softmax'))
             '''
-            model.add(Conv2D(32, (3, 3), input_shape=(3, 40, 40), activation='relu', padding='same'))
-            model.add(Dropout(0.2))
-            model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
-            model.add(MaxPooling2D(pool_size=(2, 2)))
-            model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
-            model.add(Dropout(0.2))
-            model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
-            model.add(MaxPooling2D(pool_size=(2, 2)))
-            model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
-            model.add(Dropout(0.2))
-            model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
-            model.add(MaxPooling2D(pool_size=(2, 2)))
-            model.add(Flatten())
-            model.add(Dropout(0.2))
-            model.add(Dense(1024, activation='relu', kernel_constraint=maxnorm(3)))
-            model.add(Dropout(0.2))
-            model.add(Dense(512, activation='relu', kernel_constraint=maxnorm(3)))
-            model.add(Dropout(0.2))
-            model.add(Dense(2, activation='softmax'))
-            
         else:
             from keras.models import model_from_json
             json_file = open(load.rsplit('.', 1)[0] + '.json')
@@ -138,7 +137,7 @@ class CarModel:
         self.model.fit_generator(
             train_datagen.flow(train_X, train_Y, shuffle=True),
             steps_per_epoch=steps_train,
-            epochs=100,
+            epochs=50,
             validation_data=test_datagen.flow(test_X, test_Y, shuffle=True),
             validation_steps=steps_test
         )
