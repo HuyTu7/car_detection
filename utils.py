@@ -59,16 +59,17 @@ def CropAndResize(indir, output_size, label):
 
 def LoadandPreprocessImg(path):
     path = getRealPath(path)
-    img = load_img(path)
-    
-    oldsize = img.size
-    new_img = Image.new('RGB', (oldsize[1], oldsize[1]), (255,255,255))
-    new_img.paste(img)
-    new_img.thumbnail((40, 40), Image.ANTIALIAS)
-    arr = img_to_array(new_img)
+    img = load_img(path, grayscale=True)
+    #oldsize = img.size
+    #new_img = Image.new('RGB', (oldsize[1], oldsize[1]), (255,255,255))
+    #new_img.convert("L")
+    #new_img.paste(img)
+    img.thumbnail((100, 100), Image.ANTIALIAS)
+    arr = img_to_array(img)
     arr /= 255.0
-    arr = np.reshape(arr, (1, 40, 40, 3))
+    print arr.shape
+    arr = np.resize(arr, (1, 40, 100, 1))
     return arr
 
 def getRealPath(path):
-    return os.path.join(os.getcwd(), 'CarDataset/'+os.path.normpath(path))
+    return os.path.join(os.getcwd(), 'CarDataset/cars_train/'+os.path.normpath(path))
