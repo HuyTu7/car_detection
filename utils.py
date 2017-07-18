@@ -12,7 +12,7 @@ def load_image(label, path, q=None):
     label in here is a real number. 
     load image and put in a Queue.
     """
-    img = load_img(path)
+    img = load_img(path, grayscale=True)
     arr = img_to_array(img)
     arr = np.reshape(arr, (1,)+arr.shape)
     data = {'y': label, 'data':arr}

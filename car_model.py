@@ -5,6 +5,7 @@ from keras.constraints import maxnorm
 from keras.utils import np_utils
 from keras import metrics
 from keras.models import model_from_json
+import pickle
 import logging
 import json
 import csv
@@ -47,8 +48,10 @@ class Dataset:
         else:
             self.X = np.load(dump_path + '/data_x.numpy')
             self.Y = np.load(dump_path + '/data_y.numpy')
-            self.Y = np_utils.to_categorical(self.Y)
-        logging.info("shape of train data: %s" % str(self.X.shape))
+            #dataset = pickle.load( open( "./CarDataset/original_dataset.pkl", "rb" ) )
+            #self.X = dataset[0]
+            #self.Y = dataset[1]
+        logging.info("shape of training data: %s" % str(self.X.shape))
         logging.info("Load data Done!")
 
     def getTrainTest(self):
@@ -62,7 +65,7 @@ class CarModel:
         if not load:
             self.model = model = Sequential()
             print "hi"
-            model.add(Conv2D(32, (3, 3), input_shape=(40, 100, 3), activation='relu', padding='same'))
+            model.add(Conv2D(32, (3, 3), input_shape=(40, 100, 1), activation='relu', padding='same'))
             model.add(Dropout(0.2))
             model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
             model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -147,10 +150,10 @@ class CarModel:
         # serialize model to JSON
         model_json = self.model.to_json()
 
-        with open("./models/car.json", "w") as json_file:
+        with open("./models/car2.json", "w") as json_file:
             json_file.write(model_json)
         # serialize weights to HDF5
-        self.model.save_weights("./models/car.h5")
+        self.model.save_weights("./models/car2.h5")
 
         scores = self.model.evaluate_generator(test_datagen.flow(test_X, test_Y), steps=steps_test)
         print "Model took %0.2f seconds to train" % (end - start)
@@ -198,9 +201,9 @@ def get_labels():
 
 if __name__ == '__main__':
     print "Load models"
-    dataset = Dataset('./CarDataset', './CarDataset/car_labels.csv')
-    model = CarModel()
-    model.model.load_weights('./models/car.h5')
+    dataset = Dataset('./CarDataset', './CarDataset/car_labels.csv', is_dumped=False)
+    model = CarModel(load=None)
+    #model.model.load_weights('./models/car1.h5')
     train_x, train_y, test_x, test_y = dataset.getTrainTest() 
-    #model.train(train_x, train_y, test_x, test_y)
+    model.train(train_x, train_y, test_x, test_y)
     model.getEvaluate(test_x, test_y)
