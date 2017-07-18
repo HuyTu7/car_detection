@@ -45,9 +45,13 @@ class Dataset:
                 self.Y = np.vstack((self.Y, item['y']))
             self.X.dump(dump_path + '/data_x.numpy')
             self.Y.dump(dump_path + '/data_y.numpy')
+            self.Y = np_utils.to_categorical(self.Y)
+            print "finished initialize not dumped dataset"
         else:
             self.X = np.load(dump_path + '/data_x.numpy')
             self.Y = np.load(dump_path + '/data_y.numpy')
+            self.Y = np_utils.to_categorical(self.Y)
+            print "finished loading already dumped dataset"
             #dataset = pickle.load( open( "./CarDataset/original_dataset.pkl", "rb" ) )
             #self.X = dataset[0]
             #self.Y = dataset[1]
@@ -81,7 +85,7 @@ class CarModel:
             model.add(Dropout(0.2))
             model.add(Dense(1024, activation='relu', kernel_constraint=maxnorm(3)))
             model.add(Dropout(0.2))
-            model.add(Dense(512, activation='relu', kernel_constraint=maxnorm(3)))
+            model.add(Dense(512, activation='relu' , kernel_constraint=maxnorm(3)))
             model.add(Dropout(0.4))
             model.add(Dense(2, activation='softmax'))
             '''
@@ -176,7 +180,7 @@ class CarModel:
             image = utils.LoadandPreprocessImg(image)
         else:
             image /= 255.
-            image = np.resize(image, (1, 40, 100, 3))
+            image = np.resize(image, (1, 40, 100, 1))
         score = self.model.predict(image)
         return score
 
