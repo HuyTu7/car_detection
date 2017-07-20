@@ -154,10 +154,10 @@ class CarModel:
         # serialize model to JSON
         model_json = self.model.to_json()
 
-        with open("./models/car2.json", "w") as json_file:
+        with open("./models/car3.json", "w") as json_file:
             json_file.write(model_json)
         # serialize weights to HDF5
-        self.model.save_weights("./models/car2.h5")
+        self.model.save_weights("./models/car3.h5")
 
         scores = self.model.evaluate_generator(test_datagen.flow(test_X, test_Y), steps=steps_test)
         print "Model took %0.2f seconds to train" % (end - start)
@@ -205,7 +205,7 @@ def get_labels():
 
 if __name__ == '__main__':
     print "Load models"
-    dataset = Dataset('./CarDataset', './CarDataset/car_labels.csv', is_dumped=False)
+    dataset = Dataset('./CarDataset', './CarDataset/car_labels_new.csv', is_dumped=False)
     model = CarModel(load=None)
     #model.model.load_weights('./models/car1.h5')
     train_x, train_y, test_x, test_y = dataset.getTrainTest() 
